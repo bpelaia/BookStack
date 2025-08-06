@@ -5,6 +5,15 @@ volumes:
   db: {}
 
 services:
+  adminer:
+    #image: adminer
+    image: phpmyadmin
+    environment:
+      PMA_HOST: db
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
   db:
     image: mysql:8.4
     environment:
@@ -20,6 +29,7 @@ services:
       context: .
       dockerfile: ./dev/docker/Dockerfile
     environment:
+      UID: 1001
       APP_URL: http://localhost:${DEV_PORT:-8080}
       DB_CONNECTION: mysql
       DB_HOST: db
@@ -27,7 +37,7 @@ services:
       DB_DATABASE: bookstack-dev
       DB_USERNAME: bookstack-test
       DB_PASSWORD: bookstack-test
-      TEST_DATABASE_URL: mysql://bookstack-test:bookstack-test@db/bookstack-test
+      TEST_DATABASE_URL: mysql://bookstack-test:bookstack-test@db/bookstack-dev
       MAIL_DRIVER: smtp
       MAIL_HOST: mailhog
       MAIL_PORT: 1025
@@ -35,14 +45,17 @@ services:
       - ${DEV_PORT:-8080}:80
     volumes:
       - ./:/app
-      - ./dev/docker/php/conf.d/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+      #- ./dev/docker/php/conf.d/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
     entrypoint: /app/dev/docker/entrypoint.app.sh
     extra_hosts:
-    - "host.docker.internal:host-gateway"
+      - "host.docker.internal:host-gateway"
   node:
     image: node:22-alpine
     working_dir: /app
     user: node
+    environment:
+      UID: 1001
+      user: 1001
     volumes:
       - ./:/app
     entrypoint: /app/dev/docker/entrypoint.node.sh
@@ -50,3 +63,6 @@ services:
     image: mailhog/mailhog
     ports:
       - ${DEV_MAIL_PORT:-8025}:8025
+networks:
+  default:
+    enable_ipv6: false

@@ -30,9 +30,17 @@ class HttpRequestService
     /**
      * Create a new JSON http request for use with a client.
      */
-    public function jsonRequest(string $method, string $uri, array $data): GuzzleRequest
+    public function jsonRequest(string $method, string $uri, array $data, ?string $authorization = null): GuzzleRequest
     {
         $headers = ['Content-Type' => 'application/json'];
+        if ( !empty($authorization) )
+        {
+            $headers['Authorization'] = $authorization;
+            if (preg_match('/^Splunk [a-fA-F0-9]{8}(-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$/', $authorization))
+            {
+                $data = ['event' => $data];
+            }
+        }
         return new GuzzleRequest($method, $uri, $headers, json_encode($data));
     }
 

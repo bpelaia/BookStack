@@ -15,6 +15,7 @@ return [
     'alpha_dash'           => ':attribute deve contenere solo lettere, numeri, trattini e trattini bassi.',
     'alpha_num'            => ':attribute deve contenere solo lettere e numeri.',
     'array'                => ':attribute deve essere un array.',
+    'authorization'        => 'L\'autorizzazione per Splunk richiede il seguente formato: "Splunk {UUID}".',
     'backup_codes'         => 'Il codice fornito non è valido o è già stato utilizzato.',
     'before'               => ':attribute deve essere una data prima del :date.',
     'between'              => [

@@ -21,6 +21,7 @@ class WebhooksAllPaginatedAndSorted
             $term = '%' . $listOptions->getSearch() . '%';
             $query->where(function ($query) use ($term) {
                 $query->where('name', 'like', $term)
+                    ->orWhere('authorization', 'like', $term)
                     ->orWhere('endpoint', 'like', $term);
             });
         }
