@@ -16,14 +16,18 @@
         <div>
             <div class="form-group">
                 <label for="name">{{ trans('settings.webhooks_name') }}</label>
-                @include('form.text', ['name' => 'name'])
+                @include('form.text', ['name' => 'name', 'required' => true, 'maxlength' => 150 ])
             </div>
             <div class="form-group">
                 <label for="endpoint">{{ trans('settings.webhooks_endpoint') }}</label>
-                @include('form.text', ['name' => 'endpoint'])
+                @include('form.text', ['name' => 'endpoint', 'required' => true, 'type' => 'url', 'maxlength' => 500 ])
             </div>
             <div class="form-group">
-                <label for="endpoint">{{ trans('settings.webhooks_timeout') }}</label>
+                <label for="authorization">{{ trans('settings.webhooks_authorization') }}</label>
+                @include('form.text', ['name' => 'authorization', 'maxlenth' => 250])
+            </div>
+            <div class="form-group">
+                <label for="timeout">{{ trans('settings.webhooks_timeout') }}</label>
                 @include('form.number', ['name' => 'timeout', 'min' => 1, 'max' => 600])
             </div>
         </div>

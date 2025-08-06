@@ -11,6 +11,29 @@ use Illuminate\Http\Request;
 
 class WebhookController extends Controller
 {
+    /**
+     * Perform validation for given request, for both create and update
+     */
+    private function webhookValidation(Request $request)
+    {
+        return $this->validate($request, [
+            'name'          => ['required', 'max:150'],
+            'endpoint'      => ['required', 'url', 'max:500'],
+            'authorization' => ['nullable', 'max:250',
+                function ($attribute, $value, $fail) {
+                    if (
+                        stripos($value, 'splunk ') === 0 &&
+                        !preg_match('/^Splunk [a-fA-F0-9]{8}(-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$/', $value)
+                    )
+                        $fail(trans('validation.authorization'));
+                }
+            ],
+            'events'        => ['required', 'array'],
+            'active'        => ['required'],
+            'timeout'       => ['required', 'integer', 'min:1', 'max:600'],
+        ]);
+    }
+
     public function __construct()
     {
         $this->middleware([
@@ -24,11 +47,12 @@ class WebhookController extends Controller
     public function index(Request $request)
     {
         $listOptions = SimpleListOptions::fromRequest($request, 'webhooks')->withSortOptions([
-            'name' => trans('common.sort_name'),
-            'endpoint'  => trans('settings.webhooks_endpoint'),
-            'created_at' => trans('common.sort_created_at'),
-            'updated_at' => trans('common.sort_updated_at'),
-            'active'     => trans('common.status'),
+            'name'          => trans('common.sort_name'),
+            'endpoint'      => trans('settings.webhooks_endpoint'),
+            'authorization' => trans('settings.webhook_authorization'),
+            'created_at'    => trans('common.sort_created_at'),
+            'updated_at'    => trans('common.sort_updated_at'),
+            'active'        => trans('common.status'),
         ]);
 
         $webhooks = (new WebhooksAllPaginatedAndSorted())->run(20, $listOptions);
@@ -57,13 +81,7 @@ class WebhookController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $this->validate($request, [
-            'name'     => ['required', 'max:150'],
-            'endpoint' => ['required', 'url', 'max:500'],
-            'events'   => ['required', 'array'],
-            'active'   => ['required'],
-            'timeout'  => ['required', 'integer', 'min:1', 'max:600'],
-        ]);
+        $validated = $this->webhookValidation($request);
 
         $webhook = new Webhook($validated);
         $webhook->active = $validated['active'] === 'true';
@@ -95,13 +113,7 @@ class WebhookController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $validated = $this->validate($request, [
-            'name'     => ['required', 'max:150'],
-            'endpoint' => ['required', 'url', 'max:500'],
-            'events'   => ['required', 'array'],
-            'active'   => ['required'],
-            'timeout'  => ['required', 'integer', 'min:1', 'max:600'],
-        ]);
+        $validated = $this->webhookValidation($request);
 
         /** @var Webhook $webhook */
         $webhook = Webhook::query()->findOrFail($id);

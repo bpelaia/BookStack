@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int        $id
  * @property string     $name
  * @property string     $endpoint
+ * @property string     $authorization
  * @property Collection $trackedEvents
  * @property bool       $active
  * @property int        $timeout
@@ -24,7 +25,7 @@ class Webhook extends Model implements Loggable
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'endpoint', 'timeout'];
+    protected $fillable = ['name', 'endpoint', 'authorization', 'timeout'];
 
     protected $casts = [
         'last_called_at'  => 'datetime',

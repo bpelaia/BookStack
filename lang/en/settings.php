@@ -295,6 +295,7 @@ return [
     'webhooks_name' => 'Webhook Name',
     'webhooks_timeout' => 'Webhook Request Timeout (Seconds)',
     'webhooks_endpoint' => 'Webhook Endpoint',
+    'webhooks_authorization' => 'Webhook Authorization Header Value',
     'webhooks_active' => 'Webhook Active',
     'webhook_events_table_header' => 'Events',
     'webhooks_delete' => 'Delete Webhook',

@@ -61,7 +61,7 @@ class DispatchWebhookJob implements ShouldQueue
                 'allow_redirects' => ['strict' => true],
             ]);
 
-            $response = $client->sendRequest($http->jsonRequest('POST', $this->webhook->endpoint, $this->webhookData));
+            $response = $client->sendRequest($http->jsonRequest('POST', $this->webhook->endpoint, $this->webhookData, $this->webhook->authorization));
             $statusCode = $response->getStatusCode();
 
             if ($statusCode >= 400) {
